@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景圆 -->
+    <circle cx="8" cy="8" r="7.5" fill="#f5f5f5"/>
+    
+    <!-- 番茄主体 -->
+    <circle cx="8" cy="8.5" r="6" fill="#e74c3c"/>
+    
+    <!-- 叶子 (简化版) -->
+    <path d="M8 2.5 L9.5 4 L8 4 L6.5 4 L8 2.5" fill="#27ae60"/>
+    
+    <!-- 茎 -->
+    <rect x="7.8" y="3" width="0.4" height="1" fill="#27ae60"/>
+    
+    <!-- 高光效果 -->
+    <circle cx="6" cy="6.5" r="2" fill="#ffffff" opacity="0.2"/>
+    <circle cx="10" cy="10.5" r="1.5" fill="#c0392b" opacity="0.3"/>
+    
+    <!-- 时钟刻度 (简化版) -->
+    <g stroke="#ffffff" stroke-width="0.5" opacity="0.8">
+        <line x1="8" y1="5" x2="8" y2="5.5"/>
+        <line x1="11" y1="8.5" x2="10.5" y2="8.5"/>
+        <line x1="8" y1="12" x2="8" y2="11.5"/>
+        <line x1="5" y1="8.5" x2="5.5" y2="8.5"/>
+    </g>
+    
+    <!-- 时钟指针 -->
+    <g stroke="#ffffff" stroke-width="0.5" stroke-linecap="round">
+        <line x1="8" y1="8.5" x2="8" y2="6" transform="rotate(45, 8, 8.5)"/>
+        <line x1="8" y1="8.5" x2="8" y2="7" transform="rotate(-60, 8, 8.5)"/>
+    </g>
+</svg>
