@@ -11,57 +11,67 @@ function updateDisplay(minutes, seconds) {
   timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function updateTimer() {
-  if (timeLeft <= 0) {
-    clearInterval(timer);
-    isRunning = false;
-    startStopButton.textContent = '开始';
-    chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'images/icon128.png',
-      title: '番茄钟',
-      message: '时间到！',
-      priority: 2
-    });
-    return;
-  }
-
+function updateTimerDisplay(timeLeft) {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   updateDisplay(minutes, seconds);
-  timeLeft--;
 }
 
-function startTimer() {
-  if (!isRunning) {
-    if (timeLeft <= 0) {
-      timeLeft = timerMode.value * 60;
+function updateButtonState(isRunning) {
+  startStopButton.textContent = isRunning ? '暂停' : '开始';
+}
+
+// 从background script获取状态并更新UI
+function getStateAndUpdateUI() {
+  chrome.runtime.sendMessage({ action: 'GET_STATE' }, (response) => {
+    if (response) {
+      updateTimerDisplay(response.timeLeft);
+      updateButtonState(response.isRunning);
+      timerMode.value = response.currentMode;
     }
-    timer = setInterval(updateTimer, 1000);
-    isRunning = true;
-    startStopButton.textContent = '暂停';
-  } else {
-    clearInterval(timer);
-    isRunning = false;
-    startStopButton.textContent = '开始';
+  });
+}
+
+// 监听来自background的状态更新
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'STATE_UPDATE') {
+    updateTimerDisplay(request.state.timeLeft);
+    updateButtonState(request.state.isRunning);
   }
+});
+
+function startTimer() {
+  chrome.runtime.sendMessage({
+    action: 'START',
+    mode: parseInt(timerMode.value)
+  });
+}
+
+function pauseTimer() {
+  chrome.runtime.sendMessage({ action: 'PAUSE' });
 }
 
 function resetTimer() {
-  clearInterval(timer);
-  isRunning = false;
-  timeLeft = timerMode.value * 60;
-  const minutes = Math.floor(timeLeft / 60);
-  updateDisplay(minutes, 0);
-  startStopButton.textContent = '开始';
+  chrome.runtime.sendMessage({
+    action: 'RESET',
+    mode: parseInt(timerMode.value)
+  });
 }
 
-function changeMode() {
-  resetTimer();
+function handleStartStop() {
+  chrome.runtime.sendMessage({ action: 'GET_STATE' }, (response) => {
+    if (response.isRunning) {
+      pauseTimer();
+    } else {
+      startTimer();
+    }
+  });
 }
 
-// 初始化
-timeLeft = timerMode.value * 60;
-startStopButton.addEventListener('click', startTimer);
+// 事件监听器
+startStopButton.addEventListener('click', handleStartStop);
 resetButton.addEventListener('click', resetTimer);
-timerMode.addEventListener('change', changeMode);
+timerMode.addEventListener('change', resetTimer);
+
+// 初始化时获取状态
+getStateAndUpdateUI();

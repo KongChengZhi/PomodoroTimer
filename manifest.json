@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Pomodoro Timer",
-  "version": "1.0",
+  "version": "1.1",
   "description": "A simple Pomodoro timer extension",
   "action": {
     "default_popup": "popup.html",
@@ -11,7 +11,15 @@
       "128": "images/icon128.png"
     }
   },
-  "permissions": ["alarms", "notifications"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "alarms",
+    "notifications",
+    "storage",
+    "windows"
+  ],
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",
