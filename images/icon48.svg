@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景圆 -->
+    <circle cx="24" cy="24" r="22.5" fill="#f5f5f5"/>
+    
+    <!-- 番茄主体 -->
+    <circle cx="24" cy="25.5" r="18" fill="#e74c3c"/>
+    
+    <!-- 叶子 -->
+    <path d="M24 7.5 C24 7.5, 27 3, 30 7.5 L24 12 Z" fill="#27ae60"/>
+    <path d="M24 7.5 C24 7.5, 21 3, 18 7.5 L24 12 Z" fill="#2ecc71"/>
+    
+    <!-- 茎 -->
+    <rect x="23.2" y="7.5" width="1.6" height="4.5" fill="#27ae60"/>
+    
+    <!-- 高光效果 -->
+    <circle cx="18" cy="19.5" r="6" fill="#ffffff" opacity="0.2"/>
+    <circle cx="30" cy="31.5" r="4.5" fill="#c0392b" opacity="0.3"/>
+    
+    <!-- 时钟刻度 -->
+    <g stroke="#ffffff" stroke-width="1" opacity="0.8">
+        <line x1="24" y1="15" x2="24" y2="16.5"/>
+        <line x1="33" y1="25.5" x2="31.5" y2="25.5"/>
+        <line x1="24" y1="36" x2="24" y2="34.5"/>
+        <line x1="15" y1="25.5" x2="16.5" y2="25.5"/>
+    </g>
+    
+    <!-- 时钟指针 -->
+    <g stroke="#ffffff" stroke-width="1.5" stroke-linecap="round">
+        <line x1="24" y1="25.5" x2="24" y2="18" transform="rotate(45, 24, 25.5)"/>
+        <line x1="24" y1="25.5" x2="24" y2="21" transform="rotate(-60, 24, 25.5)"/>
+    </g>
+</svg>
