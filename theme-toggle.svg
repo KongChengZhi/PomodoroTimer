@@ -50,7 +50,7 @@
         <!-- 太阳 -->
         <circle id="sun" cx="10" cy="0" r="20" fill="#FFD700"/>
         
-        <!-- 月亮  TODO 修改月亮位置-->
+        <!-- 月亮 -->
         <g id="moon" opacity="0">
             <circle cx="110" cy="0" r="20" fill="#FFFFFF"/>
             <circle cx="118" cy="-8" r="3" fill="#E1E1E1"/>

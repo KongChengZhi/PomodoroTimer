@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetButton = document.getElementById('reset');
     const modeSelect = document.getElementById('timerMode');
     
+    let isPaused = false;
+    let hasStarted = false; // 添加标记是否已经开始过
+    
     // 初始化主题切换
     const themeToggleObj = document.getElementById('themeToggle');
     themeToggleObj.addEventListener('load', function() {
@@ -27,52 +30,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    let timer;
-    let timeLeft;
-    let isRunning = false;
-
     // 更新计时器显示
-    function updateDisplay(minutes, seconds) {
-        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    function updateDisplay(timeLeft) {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     // 更新按钮状态
     function updateButtonState(isRunning) {
-        startStopButton.textContent = isRunning ? '暂停' : '开始';
-        startStopButton.style.backgroundColor = isRunning ? '#ff9800' : '#4CAF50';
+        if (isRunning) {
+            startStopButton.textContent = '暂停';
+            startStopButton.style.backgroundColor = '#ff9800';
+            isPaused = false;
+            hasStarted = true;
+        } else {
+            chrome.runtime.sendMessage({ action: 'GET_STATE' }, (response) => {
+                if (response) {
+                    const totalTime = response.currentMode * 60;
+                    // 如果从未开始过或时间是满的，显示"开始"
+                    if (!hasStarted || response.timeLeft === totalTime) {
+                        startStopButton.textContent = '开始';
+                        isPaused = false;
+                    } 
+                    // 如果有剩余时间且不是满的，说明是暂停状态
+                    else if (response.timeLeft > 0 && response.timeLeft < totalTime) {
+                        startStopButton.textContent = '继续';
+                        isPaused = true;
+                    }
+                    // 如果时间用完，显示"开始"
+                    else {
+                        startStopButton.textContent = '开始';
+                        isPaused = false;
+                        hasStarted = false;
+                    }
+                }
+            });
+            startStopButton.style.backgroundColor = '#4CAF50';
+        }
     }
 
     // 从background获取初始状态
     chrome.runtime.sendMessage({ action: 'GET_STATE' }, (response) => {
         if (response) {
-            timeLeft = response.timeLeft;
-            isRunning = response.isRunning;
-            updateDisplay(Math.floor(timeLeft / 60), timeLeft % 60);
-            updateButtonState(isRunning);
+            updateDisplay(response.timeLeft);
+            updateButtonState(response.isRunning);
             modeSelect.value = response.currentMode;
+            // 如果有剩余时间且不是满的，说明之前开始过
+            const totalTime = response.currentMode * 60;
+            if (response.timeLeft > 0 && response.timeLeft < totalTime) {
+                hasStarted = true;
+            }
         }
     });
 
     // 监听来自background的状态更新
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((request) => {
         if (request.action === 'STATE_UPDATE') {
-            timeLeft = request.state.timeLeft;
-            isRunning = request.state.isRunning;
-            updateDisplay(Math.floor(timeLeft / 60), timeLeft % 60);
-            updateButtonState(isRunning);
+            updateDisplay(request.state.timeLeft);
+            updateButtonState(request.state.isRunning);
         }
         return true;
     });
 
     // 开始/暂停按钮事件
     startStopButton.addEventListener('click', () => {
-        if (startStopButton.textContent === '开始') {
+        const buttonText = startStopButton.textContent;
+        if (buttonText === '暂停') {
+            chrome.runtime.sendMessage({ action: 'PAUSE' });
+        } else {
+            // 无论是"开始"还是"继续"，都发送START命令
             chrome.runtime.sendMessage({ 
                 action: 'START',
                 mode: parseInt(modeSelect.value)
             });
-        } else {
-            chrome.runtime.sendMessage({ action: 'PAUSE' });
         }
     });
 
@@ -82,6 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
             action: 'RESET',
             mode: parseInt(modeSelect.value)
         });
+        isPaused = false;
+        hasStarted = false;
     });
 
     // 模式选择事件
@@ -90,5 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             action: 'RESET',
             mode: parseInt(modeSelect.value)
         });
+        isPaused = false;
+        hasStarted = false;
     });
 });
