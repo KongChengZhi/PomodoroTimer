@@ -26,6 +26,10 @@
       --button-hover-shadow: rgba(76,175,80,0.2);
       --reset-button-shadow: rgba(255,82,82,0.1);
       --reset-button-hover-shadow: rgba(255,82,82,0.2);
+      --dropdown-hover-bg: #404040;
+      --input-bg: #363636;
+      --input-text: #e0e0e0;
+      --input-placeholder: #888;
     }
 
     body {
@@ -66,8 +70,14 @@
       text-align: center;
     }
 
-    select {
+    .custom-select-container {
+      position: relative;
       width: 80%;
+      margin: 0 auto;
+    }
+
+    .custom-select {
+      width: 100%;
       padding: 8px 12px;
       font-size: 14px;
       border: 1px solid var(--border-color);
@@ -78,8 +88,72 @@
       transition: all 0.3s ease;
     }
 
-    select:hover {
+    .custom-select:hover {
       border-color: #4CAF50;
+    }
+
+    .custom-select-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-top: 4px;
+      display: none;
+      box-shadow: 0 2px 8px var(--shadow-color);
+      z-index: 100;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .custom-select-dropdown.show {
+      display: block;
+    }
+
+    .custom-option {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background-color 0.2s;
+    }
+
+    .custom-option:hover {
+      background-color: var(--border-color);
+    }
+
+    [data-theme="dark"] .custom-option:hover {
+      background-color: var(--dropdown-hover-bg);
+    }
+
+    .custom-option.add-new {
+      color: #4CAF50;
+      font-style: italic;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .delete-btn {
+      color: #ff5252;
+      margin-left: 8px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .custom-option:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .delete-btn:hover {
+      background-color: rgba(255, 82, 82, 0.1);
+      border-radius: 4px;
     }
 
     .timer {
@@ -136,6 +210,227 @@
       transform: translateY(1px);
       box-shadow: none;
     }
+
+    /* 自定义配置对话框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--container-bg);
+      margin: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    [data-theme="dark"] .modal-content {
+      background: var(--container-bg);
+      color: var(--text-color);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] .modal-header h3 {
+      color: var(--text-color);
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-color);
+      cursor: pointer;
+      padding: 0;
+      min-width: auto;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] label {
+      color: var(--text-color);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--container-bg);
+      color: var(--text-color);
+      box-sizing: border-box;
+    }
+
+    [data-theme="dark"] input[type="text"] {
+      background-color: var(--input-bg);
+      color: var(--input-text);
+    }
+
+    [data-theme="dark"] input[type="text"]::placeholder {
+      color: var(--input-placeholder);
+    }
+
+    .config-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 0;
+    }
+
+    .config-group label {
+      min-width: 45px;
+    }
+
+    .config-group input[type="range"] {
+      flex: 1;
+      margin: 0;
+    }
+
+    [data-theme="dark"] input[type="range"] {
+      background: #404040;
+    }
+
+    [data-theme="dark"] input[type="range"]::-webkit-slider-runnable-track {
+      background: #404040;
+    }
+
+    .config-group span {
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .time-slider {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .time-display {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .modal-footer button {
+      padding: 8px 16px;
+      min-width: 80px;
+    }
+
+    #cancelConfig {
+      background-color: #9e9e9e;
+    }
+
+    #saveConfig {
+      background-color: #4CAF50;
+    }
+
+    /* 新增选项按钮样式 */
+    .add-option {
+      color: #4CAF50;
+      font-style: italic;
+    }
+
+    /* 自定义滑块样式 */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #ddd;
+      outline: none;
+      padding: 0;
+    }
+
+    /* 滑块拖动按钮样式 */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      margin-top: -6px;
+    }
+
+    /* 滑块悬停效果 */
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 5px rgba(76,175,80,0.3);
+    }
+
+    /* 滑块激活状态 */
+    input[type="range"]:active::-webkit-slider-thumb {
+      background: #43a047;
+    }
+
+    /* 滑块轨道样式 */
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: #ddd;
+      border-radius: 2px;
+    }
+
+    /* 提示文字容器样式 */
+    .time-warning-container {
+      min-height: 22px;
+      margin-top: 5px;
+    }
+
+    #timeWarning {
+      color: #ff9800;
+      font-size: 12px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    [data-theme="dark"] #timeWarning {
+      color: #ffb74d;
+    }
+
+    /* 自定义选项样式 */
+    .custom-option {
+      color: var(--text-color);
+    }
+
+    [data-theme="dark"] .custom-option {
+      color: var(--text-color);
+    }
   </style>
 </head>
 <body>
@@ -144,11 +439,17 @@
   </div>
   <div class="container">
     <div class="mode-selector">
-      <select id="timerMode">
-        <option value="25">工作 (25分钟)</option>
-        <option value="5">短休息 (5分钟)</option>
-        <option value="15">长休息 (15分钟)</option>
-      </select>
+      <div class="custom-select-container">
+        <div class="custom-select" id="customSelect">
+          <span id="selectedText">工作 (25分钟)</span>
+        </div>
+        <div class="custom-select-dropdown" id="selectDropdown">
+          <div class="custom-option" data-value="25">工作 (25分钟)</div>
+          <div class="custom-option" data-value="5">短休息 (5分钟)</div>
+          <div class="custom-option" data-value="15">长休息 (15分钟)</div>
+          <div class="custom-option add-new" id="addNewOption">+ 新增安排</div>
+        </div>
+      </div>
     </div>
     <div class="timer" id="timer">25:00</div>
     <div class="controls">
@@ -156,6 +457,33 @@
       <button id="reset">重置</button>
     </div>
   </div>
+
+  <!-- 自定义配置对话框 -->
+  <div id="configModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>新增时间安排</h3>
+        <button class="close-button" id="closeModal">&times;</button>
+      </div>
+      <div class="form-group">
+        <label for="configName">名称</label>
+        <input type="text" id="configName" placeholder="例如：阅读时间">
+      </div>
+      <div class="form-group">
+        <div class="config-group">
+          <label for="configTime">时长：</label>
+          <input type="range" id="configTime" min="1" max="90" value="25" step="1">
+          <span id="timeValue">25 分钟</span>
+        </div>
+        <div class="time-warning-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelConfig">取消</button>
+        <button id="saveConfig">确认</button>
+      </div>
+    </div>
+  </div>
+
   <script src="theme-toggle.js"></script>
   <script src="popup.js"></script>
 </body>
