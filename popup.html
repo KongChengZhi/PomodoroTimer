@@ -431,6 +431,38 @@
     [data-theme="dark"] .custom-option {
       color: var(--text-color);
     }
+
+    /* 提示消息样式 */
+    .toast-message {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(97, 97, 97, 0.9);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        z-index: 1000;
+        animation: fadeInOut 2s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        15% { opacity: 1; transform: translate(-50%, 0); }
+        85% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+
+    /* 禁用状态样式 */
+    .custom-select.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    [data-theme="dark"] .toast-message {
+        background-color: rgba(66, 66, 66, 0.9);
+    }
   </style>
 </head>
 <body>
@@ -441,7 +473,7 @@
     <div class="mode-selector">
       <div class="custom-select-container">
         <div class="custom-select" id="customSelect">
-          <span id="selectedText">工作 (25分钟)</span>
+          <span id="selectedText">请选择专注模式</span>
         </div>
         <div class="custom-select-dropdown" id="selectDropdown">
           <div class="custom-option" data-value="25">工作 (25分钟)</div>

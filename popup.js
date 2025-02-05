@@ -24,7 +24,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 切换下拉菜单显示状态
     function toggleDropdown() {
-        selectDropdown.classList.toggle('show');
+        // 检查是否正在计时，如果是则不允许打开下拉菜单
+        chrome.runtime.sendMessage({ action: 'GET_STATE' }, (response) => {
+            if (response && response.isRunning) {
+                // 如果正在计时，显示提示
+                const toast = document.createElement('div');
+                toast.className = 'toast-message';
+                toast.textContent = '请先重置计时器或等待本次专注时间结束';
+                document.body.appendChild(toast);
+                
+                // 2秒后自动消失
+                setTimeout(() => {
+                    toast.remove();
+                }, 2000);
+                return;
+            }
+            selectDropdown.classList.toggle('show');
+        });
     }
 
     // 关闭下拉菜单
@@ -32,10 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
         selectDropdown.classList.remove('show');
     }
 
-    // 更新选中的文本
+    // 更新选中的文本和时间显示
     function updateSelectedText(text, value) {
         selectedText.textContent = text;
         currentMode = parseInt(value);
+        // 更新显示的时间
+        const minutes = parseInt(value);
+        updateDisplay(minutes * 60); // 转换为秒
+        // 重置计时器状态
+        isPaused = false;
+        hasStarted = false;
+        updateButtonState(false);
+        // 通知background更新时间
+        chrome.runtime.sendMessage({ 
+            action: 'UPDATE_TIME', 
+            time: minutes * 60 
+        });
         closeDropdown();
     }
 
@@ -70,6 +98,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteBtn.addEventListener('click', (e) => {
                     e.stopPropagation(); // 阻止事件冒泡
                     deleteConfig(config.name);
+                });
+            });
+
+            // 为所有选项添加点击事件（包括默认选项）
+            const allOptions = selectDropdown.querySelectorAll('.custom-option:not(.add-new)');
+            allOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const value = option.dataset.value;
+                    const text = option.querySelector('span')?.textContent || option.textContent;
+                    updateSelectedText(text, value);
                 });
             });
         });
@@ -133,7 +171,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 初始化事件监听
-    customSelect.addEventListener('click', toggleDropdown);
+    customSelect.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleDropdown();
+    });
+    
+    // 初始化默认选项的点击事件
+    const defaultOptions = selectDropdown.querySelectorAll('.custom-option:not(.add-new)');
+    defaultOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const value = option.dataset.value;
+            const text = option.querySelector('span')?.textContent || option.textContent;
+            updateSelectedText(text, value);
+        });
+    });
     
     // 点击其他地方关闭下拉菜单
     document.addEventListener('click', (e) => {
@@ -238,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 更新时间显示
     function updateDisplay(timeLeft) {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
@@ -307,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (buttonText === '暂停') {
             chrome.runtime.sendMessage({ action: 'PAUSE' });
         } else {
+            // 确保使用当前选择的时间模式
             chrome.runtime.sendMessage({ 
                 action: 'START',
                 mode: currentMode

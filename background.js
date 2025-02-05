@@ -15,6 +15,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case 'RESET':
       resetTimer(request.mode);
       break;
+    case 'UPDATE_TIME':
+      updateTimer(request.time);
+      break;
     case 'GET_STATE':
       sendResponse({
         isRunning,
@@ -30,7 +33,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function startTimer(mode) {
   if (!isRunning) {
     currentMode = mode || currentMode;
-    if (timeLeft === 0) {
+    // 如果是新开始或重置状态，使用完整时间
+    if (timeLeft === 0 || timeLeft === currentMode * 60) {
       timeLeft = currentMode * 60;
     }
     isRunning = true;
@@ -61,8 +65,14 @@ function resetTimer(mode) {
   isRunning = false;
   currentMode = mode || currentMode;
   timeLeft = currentMode * 60;
+  
+  // 清除计时器
   chrome.alarms.clear('pomodoroTimer');
+  
+  // 保存状态
   saveState();
+  
+  // 广播状态更新
   broadcastState();
 }
 
@@ -126,3 +136,19 @@ chrome.storage.local.get(['timerState'], (result) => {
     }
   }
 });
+
+// 更新计时器时间
+function updateTimer(time) {
+  timeLeft = time;
+  currentMode = Math.floor(time / 60);
+  isRunning = false;
+  
+  // 如果有正在运行的计时器，停止它
+  chrome.alarms.clear('pomodoroTimer');
+  
+  // 保存状态
+  saveState();
+  
+  // 广播状态更新
+  broadcastState();
+}
